@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        },
+                        accent: {
+                            cyan: '#06b6d4',
+                            pink: '#ec4899',
+                            emerald: '#10b981'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Modern Glassmorphism Styling */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(229, 231, 235, 0.6);
+        }
+
+        .dark .glass-panel {
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Card Hover Animations */
+        .tool-card {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tool-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px -8px rgba(99, 102, 241, 0.25);
+        }
+        .dark .tool-card:hover {
+            box-shadow: 0 12px 28px -8px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Smooth Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.4);
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: rgba(75, 85, 99, 0.5);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 min-h-screen flex flex-col">
+
+    <!-- TOP HEADER NAVBAR -->
+    <header class="sticky top-0 z-40 glass-panel border-b transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            
+            <!-- Logo & Brand Name -->
+            <div class="flex items-center gap-3">
+                <a href="#" onclick="showDashboard(event)" class="flex items-center gap-2.5 group">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-accent-cyan flex items-center justify-center text-white shadow-lg shadow-brand-500/30 group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-cubes text-lg"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight bg-gradient-to-r from-gray-900 via-brand-600 to-accent-cyan dark:from-white dark:via-brand-500 dark:to-accent-cyan bg-clip-text text-transparent">
+                        Developers<span class="text-brand-500 font-extrabold">Tools</span>
+                    </span>
+                </a>
+            </div>
+
+            <!-- Header Controls: Home Button, Search & Theme Toggle -->
+            <div class="flex items-center gap-3">
+                <!-- Back to Home Button (Visible when viewing a tool or anytime for easy return) -->
+                <button id="backBtn" onclick="showDashboard()" class="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-gray-200/60 dark:bg-gray-800/60 hover:bg-brand-500 hover:text-white dark:hover:bg-brand-600 transition-all text-sm font-medium border border-gray-300/40 dark:border-gray-700/50">
+                    <i class="fa-solid fa-house text-xs"></i>
+                    <span>Home</span>
+                </button>
+
+                <!-- Global Quick Search Box -->
+                <div class="relative w-44 sm:w-64">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                    <input type="text" id="searchInput" oninput="filterTools()" placeholder="Search tools..." 
+                        class="w-full pl-9 pr-3 py-1.5 text-sm rounded-lg bg-gray-100 dark:bg-gray-800/80 border border-gray-300/60 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all placeholder-gray-400">
+                </div>
+
+                <!-- Dark / Light Mode Toggle Button -->
+                <button id="themeToggle" onclick="toggleTheme()" aria-label="Toggle Theme" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">
+                    <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- DASHBOARD VIEW -->
+        <section id="dashboardView" class="space-y-6">
+
+            <!-- Folder / Category Tabs -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none" id="categoryTabs">
+                <!-- Dynamically populated buttons -->
+            </div>
+
+            <!-- Tools Cards Grid -->
+            <div id="toolsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                <!-- Tools cards generated via JS -->
+            </div>
+
+            <!-- Empty State for Search -->
+            <div id="noResults" class="hidden text-center py-16">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-400">
+                    <i class="fa-solid fa-folder-open text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">No tools found</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Try adjusting your search query or folder filter.</p>
+            </div>
+        </section>
+
+        <!-- TOOL IFRAME VIEWER VIEW (Hidden by default) -->
+        <section id="toolViewerSection" class="hidden flex-col h-[calc(100vh-6rem)] rounded-2xl overflow-hidden glass-panel border shadow-2xl">
+            
+            <!-- Tool Top Control Bar -->
+            <div class="px-4 py-3 bg-gray-100/80 dark:bg-gray-900/90 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3 overflow-hidden">
+                    <button onclick="showDashboard()" class="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Back</span>
+                    </button>
+                    <div class="h-4 w-[1px] bg-gray-300 dark:bg-gray-700"></div>
+                    <div class="truncate">
+                        <h2 id="activeToolTitle" class="font-bold text-sm sm:text-base text-gray-900 dark:text-white truncate">Tool Name</h2>
+                        <span id="activeToolPath" class="text-xs font-mono text-gray-500 dark:text-gray-400 truncate block">path/to/index.html</span>
+                    </div>
+                </div>
+
+                <!-- Viewer Actions -->
+                <div class="flex items-center gap-2">
+                    <button onclick="reloadIframe()" title="Reload Tool" class="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+                        <i class="fa-solid fa-rotate-right text-sm"></i>
+                    </button>
+                    <a id="openExternalBtn" href="#" target="_blank" title="Open in New Tab" class="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-sm"></i>
+                    </a>
+                    <button onclick="toggleFullscreen()" title="Full Screen" class="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+                        <i class="fa-solid fa-expand text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tool iFrame Container -->
+            <div class="flex-1 w-full h-full bg-white dark:bg-gray-950 relative">
+                <iframe id="toolIframe" src="about:blank" class="w-full h-full border-0" title="Tool Workspace"></iframe>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* =========================================================================
+           1. USER DATA ARRAY (Add / Edit your local tools here)
+           =========================================================================
+           - title: Tool Display Title
+           - folder: Category or folder group name
+           - description: Short description of what the tool does
+           - path: Path to your local tool file (e.g. "./tools/calculator/index.html")
+           - icon: FontAwesome class (e.g. "fa-calculator", "fa-code", "fa-paint-brush")
+           - tags: Array of search keywords
+        ========================================================================= */
+        const toolsData = [
+            {
+                id: "tool-1",
+                title: "Developer Tools 1",
+                folder: "Developer Utilities",
+                description: "Pretty print, validate, minify, and clean up messy JSON data strings.",
+                path: "DevTools_1/index.html",
+                icon: "fa-code",
+                tags: ["css", "gradient", "design", "colors"]
+            },
+            {
+                id: "tool-2",
+                title: "Developer Tools 2",
+                folder: "Developer Utilities",
+                description: "Pretty print, validate, minify, clean up messy JSON data strings, create beautiful color gradients and copy raw CSS code instantly.",
+                path: "DevTools_2/index.html",
+                icon: "fa-code",
+                tags: ["json", "formatter", "developer", "parser"]
+            }
+        ];
+
+        /* =========================================================================
+           2. STATE & INITIALIZATION
+           ========================================================================= */
+        let currentFolder = 'All';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            renderCategoryTabs();
+            renderToolsGrid(toolsData);
+        });
+
+        /* =========================================================================
+           3. THEME TOGGLE LOGIC
+           ========================================================================= */
+        function initTheme() {
+            const savedTheme = localStorage.getItem('hubTheme');
+            if (savedTheme === 'light') {
+                document.documentElement.classList.remove('dark');
+                updateThemeIcon(false);
+            } else {
+                document.documentElement.classList.add('dark');
+                updateThemeIcon(true);
+            }
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('hubTheme', isDark ? 'dark' : 'light');
+            updateThemeIcon(isDark);
+        }
+
+        function updateThemeIcon(isDark) {
+            const icon = document.getElementById('themeIcon');
+            if (isDark) {
+                icon.className = 'fa-solid fa-sun text-yellow-400 text-lg';
+            } else {
+                icon.className = 'fa-solid fa-moon text-gray-600 text-lg';
+            }
+        }
+
+        /* =========================================================================
+           4. CATEGORY TABS RENDER
+           ========================================================================= */
+        function renderCategoryTabs() {
+            const tabsContainer = document.getElementById('categoryTabs');
+            
+            // Extract unique folders
+            const folders = ['All', ...new Set(toolsData.map(item => item.folder))];
+            
+            tabsContainer.innerHTML = folders.map(folder => {
+                const isActive = folder === currentFolder;
+                const activeClasses = isActive 
+                    ? 'bg-brand-600 text-white shadow-md shadow-brand-500/20' 
+                    : 'bg-gray-200/70 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700';
+                
+                return `
+                    <button onclick="selectCategory('${folder}')" 
+                        class="px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-xl whitespace-nowrap transition-all duration-200 ${activeClasses}">
+                        ${folder}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectCategory(folder) {
+            currentFolder = folder;
+            renderCategoryTabs();
+            filterTools();
+        }
+
+        /* =========================================================================
+           5. RENDER TOOLS GRID
+           ========================================================================= */
+        function renderToolsGrid(tools) {
+            const grid = document.getElementById('toolsGrid');
+            const noResults = document.getElementById('noResults');
+
+            if (tools.length === 0) {
+                grid.innerHTML = '';
+                noResults.classList.remove('hidden');
+                return;
+            }
+
+            noResults.classList.add('hidden');
+
+            grid.innerHTML = tools.map(tool => `
+                <div class="tool-card rounded-2xl glass-panel p-5 flex flex-col justify-between border border-gray-200/60 dark:border-gray-800/60">
+                    <div>
+                        <!-- Folder Badge & Icon -->
+                        <div class="flex items-center justify-between gap-2 mb-3">
+                            <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-md bg-brand-500/10 dark:bg-brand-400/10 text-brand-600 dark:text-brand-400 border border-brand-500/20">
+                                ${tool.folder}
+                            </span>
+                            <div class="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-brand-500">
+                                <i class="fa-solid ${tool.icon} text-base"></i>
+                            </div>
+                        </div>
+
+                        <!-- Title & Description -->
+                        <h3 class="font-bold text-base text-gray-900 dark:text-white mb-1.5 leading-snug">
+                            ${tool.title}
+                        </h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-4">
+                            ${tool.description}
+                        </p>
+                    </div>
+
+                    <div>
+                        <!-- Path Tag -->
+                        <div class="text-[11px] font-mono text-gray-400 dark:text-gray-500 truncate mb-4 bg-gray-100 dark:bg-gray-900/60 px-2 py-1 rounded">
+                            <i class="fa-regular fa-folder text-[10px] mr-1"></i>${tool.path}
+                        </div>
+
+                        <!-- Launch Button -->
+                        <button onclick="launchTool('${tool.id}')" 
+                            class="w-full py-2 px-4 rounded-xl bg-gray-900 hover:bg-brand-600 text-white dark:bg-gray-800 dark:hover:bg-brand-600 text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-sm">
+                            <span>Launch Tool</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        /* =========================================================================
+           6. FILTER & SEARCH LOGIC
+           ========================================================================= */
+        function filterTools() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+
+            const filtered = toolsData.filter(tool => {
+                const matchesCategory = currentFolder === 'All' || tool.folder === currentFolder;
+                const matchesQuery = tool.title.toLowerCase().includes(query) || 
+                                     tool.description.toLowerCase().includes(query) ||
+                                     tool.folder.toLowerCase().includes(query) ||
+                                     tool.tags.some(tag => tag.toLowerCase().includes(query));
+
+                return matchesCategory && matchesQuery;
+            });
+
+            renderToolsGrid(filtered);
+        }
+
+        /* =========================================================================
+           7. TOOL VIEWER / IFRAME NAVIGATION LOGIC
+           ========================================================================= */
+        function launchTool(toolId) {
+            const tool = toolsData.find(t => t.id === toolId);
+            if (!tool) return;
+
+            document.getElementById('activeToolTitle').innerText = tool.title;
+            document.getElementById('activeToolPath').innerText = tool.path;
+            
+            const iframe = document.getElementById('toolIframe');
+            iframe.src = tool.path;
+
+            document.getElementById('openExternalBtn').href = tool.path;
+
+            // Switch views
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('toolViewerSection').classList.remove('hidden');
+            document.getElementById('toolViewerSection').classList.add('flex');
+            
+            // Show header back button
+            document.getElementById('backBtn').classList.remove('hidden');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showDashboard(e) {
+            if(e) e.preventDefault();
+            
+            // Reset iframe
+            const iframe = document.getElementById('toolIframe');
+            iframe.src = "about:blank";
+
+            // Switch views back
+            document.getElementById('toolViewerSection').classList.add('hidden');
+            document.getElementById('toolViewerSection').classList.remove('flex');
+            document.getElementById('dashboardView').classList.remove('hidden');
+
+            // Hide header back button
+            document.getElementById('backBtn').classList.add('hidden');
+        }
+
+        function reloadIframe() {
+            const iframe = document.getElementById('toolIframe');
+            if (iframe.src !== "about:blank") {
+                iframe.contentWindow.location.reload();
+            }
+        }
+
+        function toggleFullscreen() {
+            const viewer = document.getElementById('toolViewerSection');
+            if (!document.fullscreenElement) {
+                viewer.requestFullscreen().catch(err => {
+                    console.error(`Fullscreen request failed: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LLM Exporter</title>
+  <link rel="stylesheet" href="./popup.css" />
+</head>
+<body>
+  <div class="popup">
+    <header class="popup-header">
+      <div>
+        <h1>LLM Exporter</h1>
+        <div class="header-sub">
+          <span id="selection-count" class="selection-count">0 selected</span>
+          <span id="memory-badge" class="memory-badge hidden" title="Real-time in-memory recording active">● Memory active</span>
+        </div>
+      </div>
+      <span id="site-badge" class="site-badge">Reading…</span>
+    </header>
+
+    <div id="status-banner" class="status-banner hidden"></div>
+
+    <section class="auto-panel">
+      <div class="auto-header">
+        <div>
+          <strong>Auto Continue</strong>
+          <span id="auto-state" class="auto-state">OFF</span>
+        </div>
+        <label class="switch">
+          <input id="auto-toggle" type="checkbox" />
+          <span class="switch-track" aria-hidden="true"></span>
+        </label>
+      </div>
+      <div id="auto-config" class="auto-config">
+        <label class="field-label" for="auto-prompt">Message</label>
+        <textarea id="auto-prompt" rows="2" spellcheck="false">Continue</textarea>
+        <div class="auto-row">
+          <label class="field-label" for="auto-count">Automatic messages</label>
+          <input id="auto-count" type="number" min="1" max="50" value="5" />
+        </div>
+        <div id="auto-status" class="auto-status">Waiting for the next generation.</div>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <button id="btn-select-all" class="text-button" title="Select all messages">All</button>
+      <button id="btn-select-ai" class="text-button" title="Select only AI responses">AI only</button>
+      <button id="btn-deselect-all" class="text-button" title="Deselect all messages">None</button>
+      <button id="btn-clear-memory" class="text-button" title="Clear recorded chat memory for this conversation">Clear memory</button>
+      <button id="btn-scroll" class="icon-button" title="Scroll through the full conversation" aria-label="Load full conversation history">⇅</button>
+      <button id="btn-refresh" class="icon-button" title="Refresh messages" aria-label="Refresh messages">↻</button>
+    </section>
+
+    <main id="message-list" class="message-list">
+      <div class="loading-state">Reading conversation…</div>
+    </main>
+
+    <footer class="popup-footer">
+      <button id="btn-copy" class="btn-primary">Copy selected Markdown</button>
+      <button id="btn-open-md" class="btn-secondary">Open Markdown Studio</button>
+    </footer>
+  </div>
+
+  <script src="./popup.bundle.js"></script>
+</body>
+</html>
